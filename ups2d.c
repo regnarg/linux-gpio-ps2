@@ -32,25 +32,50 @@ volatile int eventCounter = 0;
 // -------------------------------------------------------------------------
 // myInterrupt:  called every time an event occurs
 void myInterrupt(void) {
-    printf("int\n");
     char data[1024];
+    int iter[1024];
     int num= 0;
-    int last_clk = 0;
-    while (1) {
+    int last_clk = 1;
+    for (int i = 0; i < 10000000; i++) {
         int clk = digitalRead(CLOCK_PIN);
         if (last_clk == 1 && clk == 0) {
+            //printf("bit\n");
             // falling edge
-            data[num++] = digitalRead(DATA_PIN);
+            data[num] = digitalRead(DATA_PIN);
+            iter[num] = i;
+            num++;
+            if (num > 1000) break;
         }
         last_clk = clk;
-        usleep(10);
-        if (num >= 10) break;
     }
 
-    printf("got: ");
-    for (int i = 0; i < num; i++) printf("%d", (int)data[i]);
+
+    printf("wire: ");
+    for (int i = 0; i< num; i++) {
+        printf("%d", (int)data[i]);
+    }
     printf("\n");
-    //exit(0);
+    for (int i = 0; i< num; i++) {
+        printf("%d\n", iter[i]);
+    }
+
+    exit(0);
+
+    int parity = 1; // odd parity
+    printf("got: ");
+    for (int i = 8; i >= 1; i--) {
+        printf("%d", (int)data[i]);
+        parity ^= data[i];
+    }
+    printf("\n");
+
+    if (data[9] != parity)
+        printf("Parity mismatch.\n");
+    if (data[0] != 0) 
+        printf("Start bit mismatch.\n");
+    if (data[10] != 1)
+        printf("Stop bit mismatch.\n");
+
 }
 
 
@@ -65,7 +90,7 @@ int main(void) {
 
   // set Pin 17/0 generate an interrupt on high-to-low transitions
   // and attach myInterrupt() to the interrupt
-  if ( wiringPiISR (CLOCK_PIN, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
+  if ( wiringPiISR (DATA_PIN, INT_EDGE_FALLING, &myInterrupt) < 0 ) {
       fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
       return 1;
   }

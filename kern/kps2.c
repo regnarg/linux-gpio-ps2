@@ -45,7 +45,7 @@ static irqreturn_t r_irq_handler(int irq, void *dev_id, struct pt_regs *regs) {
     //printk(KERN_NOTICE "Interrupt [%d] for device %s was triggered !.\n",
     //        irq, (char *) dev_id);
 
-    const int MAXN = 64;
+    const int MAXN = 11;
     char data[MAXN];
     int iter[MAXN];
     int num= 0;
@@ -60,15 +60,45 @@ static irqreturn_t r_irq_handler(int irq, void *dev_id, struct pt_regs *regs) {
             if (num >= MAXN) break;
         }
         last_clk = clk;
-   }
-    printk(KERN_NOTICE "wire: ");
+    }
+
+    printk(KERN_NOTICE "kps2: wire: ");
     for (int i = 0; i< num; i++) {
         printk(KERN_NOTICE "%d", (int)data[i]);
     }
     printk(KERN_NOTICE "\n");
+
+    if (num < MAXN) {
+        printk(KERN_NOTICE "kps2: Received incomplete packet.\n");
+        goto exit;
+    }
+    
+    int parity = 1; // odd parity
+    unsigned char code = 0;
+    for (int i = 8; i >= 1; i--) {
+        code <<= 1;
+        code  |= data[i]; 
+        parity ^= data[i];
+    }
+
+    if (data[9] != parity) {
+        printk(KERN_NOTICE "kps2: Parity mismatch.\n");
+        goto exit;
+    }
+    if (data[0] != 0)  {
+        printk(KERN_NOTICE "kps2: Start bit mismatch.\n");
+        goto exit;
+    }
+    if (data[10] != 1) {
+        printk(KERN_NOTICE "kps2: Stop bit mismatch.\n");
+        goto exit;
+    }
+
+    printk(KERN_NOTICE "kps2: Got scancode: 0x%x\n", (int)code);
+
  
    // restore hard interrupts
-   local_irq_restore(flags);
+exit: local_irq_restore(flags);
  
    return IRQ_HANDLED;
 }
