@@ -1,3 +1,8 @@
+
+# This has been superseded by a driver included in the kernel, `drivers/input/serio/ps2-gpio.c`
+
+---
+
 # PS/2 over GPIO for Linux
 
 A simple kernel module that allows connecting a PS/2 keyboard using GPIO
