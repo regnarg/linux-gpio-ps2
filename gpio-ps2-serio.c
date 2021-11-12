@@ -9,7 +9,7 @@
 
 #include <linux/serio.h>
  
-#define DRIVER_AUTHOR "Filip Stedronsky <p@regnarg.c>"
+#define DRIVER_AUTHOR "Filip Stedronsky <p@regnarg.cz>, Jiri Kalvoda <jirikalvoda@kam.mff.cuni.cz>"
 #define DRIVER_DESC   "Bit-banged read-only PS2 driver using GPIO."
 #define MODNAME "gpio-ps2-serio"
 #define LOGPREFIX MODNAME ": "
@@ -41,10 +41,10 @@ static short int irq_clk    = 0;
 /****************************************************************************/
 static irqreturn_t irq_handler(int irq, void *dev_id, struct pt_regs *regs) {
  
-    unsigned long flags;
-    
-    // disable hard interrupts (remember them in flag 'flags')
-    local_irq_save(flags);
+    // unsigned long flags;
+    //
+    // // disable hard interrupts (remember them in flag 'flags')
+    // //local_irq_save(flags);
     
     // NOTE:
     // Anonymous Sep 17, 2013, 3:16:00 PM:
@@ -109,8 +109,9 @@ static irqreturn_t irq_handler(int irq, void *dev_id, struct pt_regs *regs) {
     printk(KERN_NOTICE LOGPREFIX "Got scancode: 0x%x\n", (int)scancode);
     serio_interrupt(gpio_ps2_serio, scancode, serio_err);
  
-   // restore hard interrupts
-exit: local_irq_restore(flags);
+exit:
+    // // restore hard interrupts
+	//local_irq_restore(flags);
  
    return IRQ_HANDLED;
 }
