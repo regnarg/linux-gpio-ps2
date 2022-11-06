@@ -13,3 +13,23 @@ or a similar SBC and thus save one USB port.
 
 The implementation is a bit quick-and-dirty so you probably shouldn't
 use it in production.
+
+# Installation guide
+
+```
+make
+make install
+```
+
+Create module configuration file `modprobe.d/linux-gpio-ps2.conf` (fill your pin numbers in GPIO/BCM pin numbering):
+```
+options gpio-ps2-serio gpio_clk=17
+options gpio-ps2-serio gpio_data=27
+```
+
+Load the module automatically:
+```
+echo gpio-ps2-serio > modules-load.d/gpio-ps2.conf
+```
+
+Then reboot.
