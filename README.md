@@ -14,6 +14,17 @@ or a similar SBC and thus save one USB port.
 The implementation is a bit quick-and-dirty so you probably shouldn't
 use it in production.
 
+# Requirements
+
+Your kernel should contain `KEYBOARD_ATKBD`, `SERIO_PCIPS2`, `SERIO_LIBPS2` and
+`SERIO_APBPS2`. (I'm not sure If only some subset is not  enough)
+
+Standard Raspbian kernel don't have this parts.  You can build your own kernel
+following this manual:
+https://www.raspberrypi.com/documentation/computers/linux_kernel.html
+and enable this parts of kernel in config.
+
+
 # Installation guide
 
 ```
